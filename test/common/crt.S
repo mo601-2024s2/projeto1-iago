@@ -1,12 +1,12 @@
 #define STACK_SIZE 65536
 
-  .text
-  .globl _start
-  .equ memory_size, 0x200000
+.text
+.globl _start
+.equ memory_size, 0x200000
 
 _start:
-  lui gp, 0x20000
-  lui sp, 0x50
+  li gp, 0x50000
+  li sp, 0x200000
   jal main
   li a7, 93
   li a0, 0

@@ -42,16 +42,32 @@ Ao final de cada instrução, o *pc* é incrementado de 4.
 
 ### Execução das instruções
 
-
+As instruções foram implementadas como funções.
+Um array de pointeiros faz a indexação inicial baseado no *opcode*, em seguida as funções chamadas usam *switch-case* com base em *funct3*, *funct5* e *funct7* para selecionar a função correta.
 
 ## Descrição de como você testou seu projeto
 
+Durante a primeira fase de implementação, verifiquei que os códigos de decodificação estavam extraindo corretamente as diferentes partes das codificações das instruções.
+Num segundo momento, testei alguns códigos mais simples do ACStone no spike para comparar o log de execução com o do meu processador.
 
+O spike pode ser executado com o seguinte comando:
+
+`spike -d --pc=0x1040C --isa=rv32g -m0x10000:0x200000000 test/ACStone/122.loop.elf`
 
 ## Considerações gerais sobre seu aprendizado nesse projeto
 
+Este foi um projeto que exige muito tempo para ser executado. 
+A implementação de um simulador depende de diversas considerações e demanda muita atenção em cada etapa.
+Dentro dos limites do meu tempo e saúde mental, não consegui o resultado que esperava, mas aprendi muito em diversas áreas.
 
+Alguns pontos que considero importantes para garantir a boa execução do projeto:
+- Aprender sobre o linker e as informações embutidas no arquivo crt.S, as quais são importantes para configurar o layout de memória do programa;
+- Entender o layout de memória do programa e como isso afeta os registradores *sp* e *gp*;
+- Entender a estrutura dos arquivos elf, como entender seu conteúdo e copiar corretamente as informações pra dentro da minha representação de memória;
+- Entender o uso de syscalls e como elas afetam o estado do simulador;
+- Compilar um programa estando ciente das necessidades de uma stdlib e como ela afeta os requisitos do simulador.
 
 ## Desempenho do seu simulador conforme DryStone e CoreMark
 
-
+Não foi possível rodar os benchmarks DryStone e CoreMark no momento, pois algum erro de implementação me impede de executar prints formatados com o resultado esperado.
+Dados os logs de execução do ACStone, o problema está em alguma instrução usada na implementação dos laços.

@@ -43,6 +43,19 @@ typedef struct {
 	uint32_t	p_align;
 } elf32_ph;
 
+typedef struct {
+  uint32_t   sh_name;
+  uint32_t   sh_type;
+  uint32_t   sh_flags;
+  uint32_t   sh_addr;
+  uint32_t   sh_offset;
+  uint32_t   sh_size;
+  uint32_t   sh_link;
+  uint32_t   sh_info;
+  uint32_t   sh_addralign;
+  uint32_t   sh_entsize;
+} elf32_sh;
+
 #define ET_EXEC 0x02
 #define RISCV   0xF3 	
 #define LENDIAN 0x01
@@ -93,6 +106,10 @@ void ld_elf(char *fname) {
     exit(1);
   }
 
+  for (int i = 0; i < (sizeof(mem) / 4); i++) {
+    mem[i] = 0;
+  }
+
   for (unsigned i = 0; i < e_header.e_phnum; i++) {
     elf32_ph ph_header;
     fseek(in, e_header.e_phoff + e_header.e_phentsize * i, SEEK_SET);
@@ -108,6 +125,24 @@ void ld_elf(char *fname) {
     }
     // TODO: Apply memory flags
     // printf(" p_flags: %d\n", ph_header.p_flags);
+  }
+
+  elf32_sh sh_header;
+  fseek(in, e_header.e_shoff + e_header.e_shentsize * e_header.e_shstrndx, SEEK_SET);
+  fread(&sh_header, sizeof(sh_header), 1, in);
+  unsigned shrtrtab =  sh_header.sh_offset;
+
+  for (unsigned i = 0; i < e_header.e_shnum; i++) {
+    fseek(in, e_header.e_shoff + e_header.e_shentsize * i, SEEK_SET);
+    fread(&sh_header, sizeof(sh_header), 1, in);
+        
+    char buffer[32];
+    fseek(in, shrtrtab + sh_header.sh_name, SEEK_SET);
+    fgets(buffer, 31, in);
+
+    if (strcmp(buffer, ".bss") == 0) {
+      pbrk = sh_header.sh_addr;
+    }
   }
   pc = e_header.e_entry;
   fclose(in);
@@ -127,9 +162,9 @@ int start(unsigned total_cycles) {
     if (NOT_COMPACT(i))
       op_ex[OPCODE(i)](i);
     pc += 4;
-    count++;
+    cycle += 1;
     if (total_cycles > 0) {
-      if (count >= total_cycles)
+      if (count > total_cycles)
         exit(0);
       count++;
     }

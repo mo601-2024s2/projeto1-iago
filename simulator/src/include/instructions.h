@@ -10,19 +10,19 @@
 bool running = true;
 bool error = false;
 uint32_t registers[32] = {0};
-uint32_t pc = 0;
+uint32_t pc = 0, pbrk = 0;
 uint32_t cycle = 0;
 char mnemonic[32];
 
 static inline uint32_t regr(uint8_t i) {
   return i ? registers[i] : 0;
 }
-static inline void regw(uint8_t i, uint32_t val) {
+static inline void regw(uint32_t i, uint32_t val) {
   registers[i] = val;
 }
 
 // TODO: Allocate memory dynamically
-#define MEMORY_LIMIT 1024 * 1024
+#define MEMORY_LIMIT 4 * 1024 * 1024
 uint8_t mem[MEMORY_LIMIT] = { 0 };
 
 static inline uint32_t mr(uint32_t address) {
@@ -33,7 +33,7 @@ static inline void mw(uint32_t address, uint32_t val) {
 }
 
 void print_log(uint32_t instruction, uint32_t rd_value, char* mnemonic) {
-  fprintf(stderr, "PC=%08X [%08X] x%02u=%08X x%02u=%08X x%02u=%08X %s\n", 
+  fprintf(stderr, "PC=%08X [%08x] x%02u=%08X x%02u=%08X x%02u=%08X %s\n", 
          pc, instruction, RD(instruction), rd_value, 
          RS1(instruction), regr(RS1(instruction)), 
          RS2(instruction), regr(RS2(instruction)),
@@ -74,11 +74,15 @@ static inline void syscall() {
     running = false;
     break;
   case 214: // brk
-    // TODO: Not implemented
-    regw(10, 0);
+    if (a0 == 0) {
+      regw(10, pbrk);
+    } else {
+      regw(10, pbrk + a0);
+      // fprintf(stderr, "Error: Unimplemented brk behavior.\n");
+    }
     break;
   case 403:
-
+    exit(1);
     break;
   default:
     fprintf(stderr, "Error: Unimplemented syscall number %u.\n", number);
@@ -159,7 +163,7 @@ static inline void sh(uint32_t i) {
 static inline void sw(uint32_t i) {
   sprintf(mnemonic, "sw      %s,%i(%s)", reg_names[RS2(i)], sext(IMMS(i), 12), reg_names[RS1(i)]);
   print_log(i, regr(RD(i)), mnemonic);
-  mw(regr(RS1(i)) + (int32_t) sext(IMMS(i), 12), regr(RS2(i)));
+  mw(regr(RS1(i)) + (int32_t) sext(IMMS(i), 13), regr(RS2(i)));
 }
 static inline void lui(uint32_t i) {
   sprintf(mnemonic, "lui     %s,0x%X", reg_names[RD(i)], IMMU(i) >> 12);
@@ -288,7 +292,7 @@ static inline void jal(uint32_t i) {
   pc += (int32_t) sext(IMMJ(i), 20) - 4;
 }
 static inline void jalr(uint32_t i) {
-  sprintf(mnemonic, "jalr    %s,%i(%s)", reg_names[RD(i)], sext(IMMI(i), 12), reg_names[RS1(i)]);
+  sprintf(mnemonic, "jalr    %s,%s,%i", reg_names[RD(i)], reg_names[RS1(i)], sext(IMMI(i), 12));
   print_log(i, pc + 4, mnemonic);
   uint32_t t = pc + 4;
   pc = (regr(RS1(i)) + (uint32_t) sext(IMMI(i), 12)) - 4;

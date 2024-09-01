@@ -46,7 +46,7 @@ Original Author: Shay Gal-on
         and implementation of functions thereof.
 */
 #ifndef USE_CLOCK
-#define USE_CLOCK 0
+#define USE_CLOCK 1
 #endif
 /* Configuration: HAS_STDIO
         Define to 1 if the platform has stdio.h.
@@ -65,10 +65,7 @@ Original Author: Shay Gal-on
 /* Configuration: CORE_TICKS
         Define type of return from the timing functions.
  */
-#if defined(_MSC_VER)
-#include <windows.h>
-typedef size_t CORE_TICKS;
-#elif HAS_TIME_H
+#if HAS_TIME_H
 #include <time.h>
 typedef clock_t CORE_TICKS;
 #else
@@ -90,7 +87,7 @@ typedef clock_t CORE_TICKS;
 #endif
 #ifndef COMPILER_FLAGS
 #define COMPILER_FLAGS \
-    FLAGS_STR /* "Please put compiler flags here (e.g. -o3)" */
+    "-O3"
 #endif
 #ifndef MEM_LOCATION
 #define MEM_LOCATION                                                         \
@@ -142,7 +139,7 @@ typedef size_t         ee_size_t;
         MEM_STACK - to allocate the data block on the stack (NYI).
 */
 #ifndef MEM_METHOD
-#define MEM_METHOD MEM_MALLOC
+#define MEM_METHOD MEM_STACK
 #endif
 
 /* Configuration: MULTITHREAD

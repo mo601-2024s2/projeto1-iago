@@ -32,7 +32,7 @@ char            Ch_1_Glob,
 int             Arr_1_Glob [50];
 int             Arr_2_Glob [50] [50];
 
-extern char     *malloc ();
+// extern char     *malloc ();
 Enumeration     Func_1 ();
   /* forward declaration necessary since Enumeration may not simply be int */
 
@@ -92,8 +92,10 @@ main ()
 
   /* Initializations */
 
-  Next_Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
-  Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
+  Rec_Type npg, pg;
+
+  Next_Ptr_Glob = (Rec_Pointer) &npg;
+  Ptr_Glob = (Rec_Pointer) &pg;
 
   Ptr_Glob->Ptr_Comp                    = Next_Ptr_Glob;
   Ptr_Glob->Discr                       = Ident_1;

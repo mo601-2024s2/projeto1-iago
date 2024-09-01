@@ -24,25 +24,9 @@ score:
 	@echo "Check run1.log and run2.log for results."
 	@echo "See README.md for run and reporting rules." 
 	
-ifndef PORT_DIR
-# Ports for a couple of common self hosted platforms
-UNAME=$(shell if command -v uname 2> /dev/null; then uname ; fi)
-ifneq (,$(findstring CYGWIN,$(UNAME)))
-PORT_DIR=cygwin
-endif
-ifneq (,$(findstring Darwin,$(UNAME)))
-PORT_DIR=macos
-endif
-ifneq (,$(findstring FreeBSD,$(UNAME)))
-PORT_DIR=freebsd
-endif
-ifneq (,$(findstring Linux,$(UNAME)))
+
 PORT_DIR=linux
-endif
-endif
-ifndef PORT_DIR
-$(error PLEASE define PORT_DIR! (e.g. make PORT_DIR=simple)) 
-endif
+
 vpath %.c $(PORT_DIR)
 vpath %.h $(PORT_DIR)
 vpath %.mak $(PORT_DIR)
@@ -72,23 +56,10 @@ CHECK_FILES = $(ORIG_SRCS) $(HEADERS)
 $(OPATH):
 	$(MKDIR) $(OPATH)
 
-.PHONY: compile link
-ifdef SEPARATE_COMPILE
-$(OPATH)$(PORT_DIR):
-	$(MKDIR) $(OPATH)$(PORT_DIR)
-
-compile: $(OPATH) $(OPATH)$(PORT_DIR) $(OBJS) $(HEADERS) 
-link: compile 
-	$(LD) $(LFLAGS) $(XLFLAGS) $(OBJS) $(LOUTCMD)
-	
-else
-
 compile: $(OPATH) $(SRCS) $(HEADERS) 
 	$(CC) $(CFLAGS) $(XCFLAGS) $(SRCS) $(OUTCMD)
 link: compile 
 	@echo "Link performed along with compile"
-
-endif
 
 $(OUTFILE): $(SRCS) $(HEADERS) Makefile core_portme.mak $(EXTRA_DEPENDS) $(FORCE_REBUILD)
 	$(MAKE) port_prebuild
@@ -126,15 +97,3 @@ load: $(OUTFILE)
 clean:
 	rm -f $(OUTFILE) $(OBJS) $(OPATH)*.log *.info $(OPATH)index.html $(PORT_CLEAN)
 
-.PHONY: force_rebuild
-force_rebuild:
-	echo "Forcing Rebuild"
-	
-.PHONY: check
-check:
-	md5sum -c coremark.md5 
-
-ifdef ETC
-# Targets related to testing and releasing CoreMark. Not part of the general release!
-include Makefile.internal
-endif	

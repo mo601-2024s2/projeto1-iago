@@ -144,11 +144,12 @@ static inline void lhu(uint32_t i) {
 static inline void lw(uint32_t i) {
   sprintf(mnemonic, "lw      %s,%i(%s)", reg_names[RD(i)], sext(IMMI(i), 12), reg_names[RS1(i)]);
   print_log(i, mr(regr(RS1(i)) + (int32_t) sext(IMMI(i), 12)), mnemonic);
+  // fprintf(stderr, "read %i from %x \n", mr(regr(RS1(i)) + (int32_t) sext(IMMI(i), 12)), regr(RS1(i)) + (int32_t) sext(IMMI(i), 12));
   regw(RD(i), mr(regr(RS1(i)) + (int32_t) sext(IMMI(i), 12)));
 }
 static inline void sb(uint32_t i) {
   uint32_t addr = regr(RS1(i)) + (int32_t) sext(IMMS(i), 12);
-  uint32_t data = (regr(RS2(i)) & 0xFF) | (mr(addr) & 0xFF00);
+  uint32_t data = (regr(RS2(i)) & 0xFF) | (mr(addr) & 0xFFFFFF00);
   sprintf(mnemonic, "sb      %s,%i(%s)", reg_names[RS2(i)], sext(IMMS(i), 12), reg_names[RS1(i)]);
   print_log(i, regr(RD(i)), mnemonic);
   mw(addr, data);
@@ -163,7 +164,8 @@ static inline void sh(uint32_t i) {
 static inline void sw(uint32_t i) {
   sprintf(mnemonic, "sw      %s,%i(%s)", reg_names[RS2(i)], sext(IMMS(i), 12), reg_names[RS1(i)]);
   print_log(i, regr(RD(i)), mnemonic);
-  mw(regr(RS1(i)) + (int32_t) sext(IMMS(i), 13), regr(RS2(i)));
+  // fprintf(stderr, "[%x] = %i \n", regr(RS1(i)) + (int32_t) sext(IMMS(i), 12), regr(RS2(i)));
+  mw(regr(RS1(i)) + (int32_t) sext(IMMS(i), 12), regr(RS2(i)));
 }
 static inline void lui(uint32_t i) {
   sprintf(mnemonic, "lui     %s,0x%X", reg_names[RD(i)], IMMU(i) >> 12);
@@ -286,10 +288,10 @@ static inline void fence(uint32_t i) {
   print_log(i, regr(RD(i)), mnemonic);
 }
 static inline void jal(uint32_t i) {
-  sprintf(mnemonic, "jal     %s,%X", reg_names[RD(i)], pc + (int32_t) sext(IMMJ(i), 20));
+  sprintf(mnemonic, "jal     %s,%X", reg_names[RD(i)], pc + (int32_t) sext(IMMJ(i), 21));
   print_log(i, pc + 4, mnemonic);
   regw(RD(i), pc + 4);
-  pc += (int32_t) sext(IMMJ(i), 20) - 4;
+  pc += (int32_t) sext(IMMJ(i), 21) - 4;
 }
 static inline void jalr(uint32_t i) {
   sprintf(mnemonic, "jalr    %s,%s,%i", reg_names[RD(i)], reg_names[RS1(i)], sext(IMMI(i), 12));

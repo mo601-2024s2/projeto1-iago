@@ -428,4 +428,6 @@ typedef struct record
           } variant;
       } Rec_Type, *Rec_Pointer;
 
+#include <stdlib.h>
+#include <string.h>
 

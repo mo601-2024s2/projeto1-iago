@@ -94,18 +94,6 @@ volatile ee_s32 seed5_volatile = 0;
 #define MYTIMEDIFF(fin, ini)       ((fin) - (ini))
 #define TIMER_RES_DIVIDER          1
 #define SAMPLE_TIME_IMPLEMENTATION 1
-#elif defined(_MSC_VER)
-#define NSECS_PER_SEC        10000000
-#define EE_TIMER_TICKER_RATE 1000
-#define CORETIMETYPE         FILETIME
-#define GETMYTIME(_t)        GetSystemTimeAsFileTime(_t)
-#define MYTIMEDIFF(fin, ini) \
-    (((*(__int64 *)&fin) - (*(__int64 *)&ini)) / TIMER_RES_DIVIDER)
-/* setting to millisces resolution by default with MSDEV */
-#ifndef TIMER_RES_DIVIDER
-#define TIMER_RES_DIVIDER 1000
-#endif
-#define SAMPLE_TIME_IMPLEMENTATION 1
 #elif HAS_TIME_H
 #define NSECS_PER_SEC        1000000000
 #define EE_TIMER_TICKER_RATE 1000

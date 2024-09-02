@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 #include "utils.h"
 
 bool running = true;
@@ -29,7 +30,9 @@ static inline uint32_t mr(uint32_t address) {
   return (address < (MEMORY_LIMIT)) ? *((uint32_t*) &mem[address]) : 0;
 }
 static inline void mw(uint32_t address, uint32_t val) {
-  *((uint32_t*) &mem[address]) = val;
+  uint32_t* ptr = ((uint32_t*) &mem[address]);
+  *ptr = val;
+  // fprintf(stderr, "[%x] = %x \n", address, val, *((uint32_t*) &mem[address]));
 }
 
 void print_log(uint32_t instruction, uint32_t rd_value, char* mnemonic) {
@@ -51,6 +54,9 @@ static inline void syscall() {
   uint32_t a6 = regr(16);
   switch (number)
   {
+  case 57: // close
+    regw(10, 0);
+    break;
   case 64: // write
     // printf("write(%i, %x, %u)\n", a0, a1, a2);
     if (a0 == 1) {
@@ -81,8 +87,16 @@ static inline void syscall() {
       // fprintf(stderr, "Error: Unimplemented brk behavior.\n");
     }
     break;
-  case 403:
-    exit(1);
+  case 403: // gettimeofday
+    if (a0 == 0) {
+      time_t currentTime;
+      time(&currentTime);
+      mw(a1, currentTime);
+      regw(10, 0);
+    } else {
+      // fprintf(stderr, "Error: Unimplemented gettimeofday behavior.\n");
+      exit(1);
+    }
     break;
   default:
     fprintf(stderr, "Error: Unimplemented syscall number %u.\n", number);

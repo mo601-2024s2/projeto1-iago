@@ -71,7 +71,32 @@ Alguns pontos que considero importantes para garantir a boa execução do projet
 
 Uma possível fonte de problemas é o tamanho da liberdade deste projeto, de forma que não estudar corretamente a melhor maneira de compilar os programas e a escolha de implementação de stdlib pode consumir muito tempo. Por exemplo, a *newlib* que é disponibilizada junto ao *riscv-gnu-toolchain* requer mais syscalls que a *picolibc*, sendo que a segunda aparenta ser mais fácil de customizar as instruções.
 
-## Desempenho do seu simulador conforme DryStone e CoreMark
+## Desempenho do seu simulador conforme DhryStone e CoreMark
 
-Não foi possível rodar os benchmarks DryStone e CoreMark no momento, pois algum erro de implementação me impede de executar prints formatados com o resultado esperado.
-Dados os logs de execução do ACStone, o problema está em alguma instrução usada na implementação dos laços.
+Passando o tempo diretamente do host para o simulador, obtive:
+
+### Dhrystone
+
+- 2000 iterações: 500 Dhrystones per Second
+- 20000 iterações: 312 Dhrystones per Second
+
+### CoreMark
+
+2K performance run parameters for coremark.
+CoreMark Size    : 666
+Total ticks      : 14997905
+Total time (secs): 14
+Iterations/Sec   : 0
+Iterations       : 10
+Compiler version : GCC13.2.0
+Compiler flags   : -O3
+Memory location  : Please put data memory location here
+                        (e.g. code in flash, data on heap etc)
+seedcrc          : 0xe9f5
+[0]crclist       : 0xe714
+[0]crcmatrix     : 0x1fd7
+[0]crcstate      : 0x8e3a
+[0]crcfinal      : 0xfcaf
+Correct operation validated. See README.md for run and reporting rules.
+
+O código do CoreMark ainda precisa de alterações para que o tempo total e o número de iterações por segundo sejan marcados corretamente, além de ser compilado para PERFORMANCE_RUN.

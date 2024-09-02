@@ -120,14 +120,14 @@ static inline void srl(uint32_t i) {
 static inline void lb(uint32_t i) {
   uint32_t word = mr(regr(RS1(i)) + sext(IMMI(i), 12));
   sprintf(mnemonic, "lb      %s,%i(%s)", reg_names[RD(i)], sext(IMMI(i), 12), reg_names[RS1(i)]);
-  print_log(i, sext(word & 0xFF, 7), mnemonic);
-  regw(RD(i), sext(word & 0xFF, 7));
+  print_log(i, sext(word & 0xFF, 8), mnemonic);
+  regw(RD(i), sext(word & 0xFF, 8));
 }
 static inline void lh(uint32_t i) {
   uint32_t word = mr(regr(RS1(i)) + sext(IMMI(i), 12));
   sprintf(mnemonic, "lh      %s,%i(%s)", reg_names[RD(i)], sext(IMMI(i), 12), reg_names[RS1(i)]);
-  print_log(i, sext(word & 0xFFFF, 15), mnemonic);
-  regw(RD(i), sext(word & 0xFFFF, 15));
+  print_log(i, sext(word & 0xFFFF, 16), mnemonic);
+  regw(RD(i), sext(word & 0xFFFF, 16));
 }
 static inline void lbu(uint32_t i) {
   uint32_t word = mr(regr(RS1(i)) + sext(IMMI(i), 12));
@@ -335,23 +335,23 @@ static inline void mulhu(uint32_t i) {
 }
 static inline void i_div(uint32_t i) {
   sprintf(mnemonic, "div     %s,%s,%s", reg_names[RD(i)], reg_names[RS1(i)], reg_names[RS2(i)]);
-  print_log(i, ((int64_t) regr(RS1(i)) / (int64_t) regr(RS2(i))), mnemonic);
-  regw(RD(i), ((int64_t) regr(RS1(i)) / (int64_t) regr(RS2(i))));
+  print_log(i, ((int32_t) regr(RS1(i)) / (int32_t) regr(RS2(i))), mnemonic);
+  regw(RD(i), ((int32_t) regr(RS1(i)) / (int32_t) regr(RS2(i))));
 }
 static inline void divu(uint32_t i) {
   sprintf(mnemonic, "divu    %s,%s,%s", reg_names[RD(i)], reg_names[RS1(i)], reg_names[RS2(i)]);
-  print_log(i, ((uint64_t) regr(RS1(i)) / (uint64_t) regr(RS2(i))), mnemonic);
-  regw(RD(i), ((uint64_t) regr(RS1(i)) / (uint64_t) regr(RS2(i))));
+  print_log(i, (regr(RS1(i)) / regr(RS2(i))), mnemonic);
+  regw(RD(i), (regr(RS1(i)) / regr(RS2(i))));
 }
 static inline void rem(uint32_t i) {
   sprintf(mnemonic, "rem     %s,%s,%s", reg_names[RD(i)], reg_names[RS1(i)], reg_names[RS2(i)]);
-  print_log(i, ((int64_t) regr(RS1(i)) % (int64_t) regr(RS2(i))) >> 32, mnemonic);
-  regw(RD(i), ((int64_t) regr(RS1(i)) % (int64_t) regr(RS2(i))) >> 32);
+  print_log(i, ((int32_t) regr(RS1(i)) % (int32_t) regr(RS2(i))), mnemonic);
+  regw(RD(i), ((int32_t) regr(RS1(i)) % (int32_t) regr(RS2(i))));
 }
 static inline void remu(uint32_t i) {
   sprintf(mnemonic, "remu    %s,%s,%s", reg_names[RD(i)], reg_names[RS1(i)], reg_names[RS2(i)]);
-  print_log(i, ((uint64_t) regr(RS1(i)) % (uint64_t) regr(RS2(i))) >> 32, mnemonic);
-  regw(RD(i), ((uint64_t) regr(RS1(i)) % (uint64_t) regr(RS2(i))) >> 32);
+  print_log(i, (regr(RS1(i)) % regr(RS2(i))), mnemonic);
+  regw(RD(i), (regr(RS1(i)) % regr(RS2(i))));
 }
 
 static inline void op_ld_f(uint32_t i) {

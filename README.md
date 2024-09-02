@@ -54,6 +54,8 @@ O spike pode ser executado com o seguinte comando:
 
 `spike -d --pc=0x1040C --isa=rv32g -m0x10000:0x200000000 test/ACStone/122.loop.elf`
 
+Considerando o resultado deste projeto, considero que preparar antecipadamente um conjunto de testes é a única maneira de atingir um bom resultado, pois isso permitiria testar continuamente o resultado da implementação. Uma boa abordagem seria implementar testes unitários para as diferentes instruções para garantir que a decodificação e a execução estivessem ocorrendo como esperado.
+
 ## Considerações gerais sobre seu aprendizado nesse projeto
 
 Este foi um projeto que exige muito tempo para ser executado. 
@@ -66,6 +68,8 @@ Alguns pontos que considero importantes para garantir a boa execução do projet
 - Entender a estrutura dos arquivos elf, como entender seu conteúdo e copiar corretamente as informações pra dentro da minha representação de memória;
 - Entender o uso de syscalls e como elas afetam o estado do simulador;
 - Compilar um programa estando ciente das necessidades de uma stdlib e como ela afeta os requisitos do simulador.
+
+Uma possível fonte de problemas é o tamanho da liberdade deste projeto, de forma que não estudar corretamente a melhor maneira de compilar os programas e a escolha de implementação de stdlib pode consumir muito tempo. Por exemplo, a *newlib* que é disponibilizada junto ao *riscv-gnu-toolchain* requer mais syscalls que a *picolibc*, sendo que a segunda aparenta ser mais fácil de customizar as instruções.
 
 ## Desempenho do seu simulador conforme DryStone e CoreMark
 
